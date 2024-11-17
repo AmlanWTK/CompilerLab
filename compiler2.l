@@ -63,7 +63,7 @@ void yyerror(const char *s) {
 "yell" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
 "during" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
 "within" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
-// ... (other keywords remain unchanged)
+
 
 // Newline
 ['\n'] { printf("Newline\n"); newline_count++; }
