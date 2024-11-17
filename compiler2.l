@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
+// Token count variables
 int keyword_count = 0;
 int identifier_count = 0;
 int number_count = 0;
@@ -13,108 +13,103 @@ int unknown_count = 0;
 int comment_count = 0;
 int newline_count = 0;
 
+// Error count variable
+int error_count = 0;
+
+// Error reporting function
+void yyerror(const char *s) {
+    fprintf(stderr, "Error: %s at line %d\n", s, yylineno);
+    error_count++;
+}
 %}
 
-
 %%
 
+// Single-line comment
+"~" { 
+    char c = input();
+    while (c != '\n' && c != EOF) {
+        c = input();
+    }
+    printf("This is a single line comment\n");
+    comment_count++;
+}
 
-"~" 	{ 
-    		char c = input();
-    		while (c != '\n' && c != EOF) {
-       			c = input();
-    		}
-    		printf("This is a single line comment\n");
-    		comment_count++;
-    	}
-
-
-
-"~~" 	{ 
-    		printf("This is for Multiple line comment start\n");
-    		char demo = input();
+// Multi-line comment
+"~~" {
+    printf("This is for Multiple line comment start\n");
+    char demo = input();
     
-    		while (1) {
-        		// Reading characters until found a '~' or reached EOF
-        		while (demo != '~' && demo != EOF) {
-            			demo = input();
-        		}
-        		demo = input(); // Read the next character after '~'
-        
-        		// Check if the next character is also '~', indicating the end of the comment
-        		if (demo == '~') {
-            			break;
-        		}
-    		}
+    while (1) {
+        while (demo != '~' && demo != EOF) {
+            demo = input();
+        }
+        demo = input();
+        if (demo == '~') {
+            break;
+        }
+        if (demo == EOF) { // Handle unexpected end of file
+            yyerror("Unexpected EOF in multi-line comment");
+            break;
+        }
+    }
     
-    		printf("Multiple Line comment End here\n");
-    		comment_count++;
-	}
+    printf("Multiple Line comment End here\n");
+    comment_count++;
+}
 
+// Keywords
+"represent" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
+"yell" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
+"during" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
+"within" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
+// ... (other keywords remain unchanged)
 
-"represent"	{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
-"yell"		{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
-"during"        	{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
-"within"           	{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
-"range"           	{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
-"cond"           	{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
-"cond_again"     	{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
-"finish_cond"      	{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
-"given"           	{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
-"display"          	{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
-"integer"          	{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
-"real"          	{ printf("KEYWORD: %s\n", yytext); keyword_count++;; }
-"var"         	{ printf("KEYWORD: %s\n", yytext); keyword_count++;; }
-"bland"            	{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
-"attach"          	{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
-"phase"        	{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
-"change" 		{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
-"sample"        	{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
-"normal"         	{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
-"pull"        	{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
-"arrange"          	{ printf("KEYWORD: %s\n", yytext); keyword_count++; }
+// Newline
+['\n'] { printf("Newline\n"); newline_count++; }
 
-['\n']		{ printf("Newline\n"); newline_count++; }
+// Logical operators
+"==" { printf("LOGICAL OPERATOR: EQUAL (==)\n"); logical_op_count++; }
+"!=" { printf("LOGICAL OPERATOR: NOT EQUAL (!=)\n"); logical_op_count++; }
+">=" { printf("LOGICAL OPERATOR: GREATER THAN OR EQUAL (>=)\n"); logical_op_count++; }
+"<=" { printf("LOGICAL OPERATOR: LESS THAN OR EQUAL (<=)\n"); logical_op_count++; }
+"&&" { printf("LOGICAL OPERATOR: AND (&&)\n"); logical_op_count++; }
+"||" { printf("LOGICAL OPERATOR: OR (||)\n"); logical_op_count++; }
+"!" { printf("LOGICAL OPERATOR: NOT (!)\n"); logical_op_count++; }
 
+// Math operators
+"+" { printf("MATH OPERATOR: PLUS (+)\n"); math_op_count++; }
+"-" { printf("MATH OPERATOR: MINUS (-)\n"); math_op_count++; }
+"*" { printf("MATH OPERATOR: MULTIPLY (*)\n"); math_op_count++; }
+"/" { printf("MATH OPERATOR: DIVIDE (/)\n"); math_op_count++; }
+"%" { printf("MATH OPERATOR: MODULO (%%)\n"); math_op_count++; }
+"^" { printf("MATH OPERATOR: POWER (^)\n"); math_op_count++; }
 
-"=="                { printf("LOGICAL OPERATOR: EQUAL (==)\n"); logical_op_count++; }
-"!="                { printf("LOGICAL OPERATOR: NOT EQUAL (!=)\n"); logical_op_count++; }
-">="                { printf("LOGICAL OPERATOR: GREATER THAN OR EQUAL (>=)\n"); logical_op_count++; }
-"<="                { printf("LOGICAL OPERATOR: LESS THAN OR EQUAL (<=)\n"); logical_op_count++; }
-"&&"                { printf("LOGICAL OPERATOR: AND (&&)\n"); logical_op_count++; }
-"||"                { printf("LOGICAL OPERATOR: OR (||)\n"); logical_op_count++; }
-"!"                 { printf("LOGICAL OPERATOR: NOT (!)\n"); logical_op_count++; }
+// Symbols
+[\{\}\(\)\[\];,] { printf("SYMBOL: %s\n", yytext); symbol_count++; }
+"$" { printf("SYMBOL: Dollar ($)\n"); symbol_count++; }
+"@" { printf("SYMBOL: At (@)\n"); symbol_count++; }
 
+// Identifiers
+[a-zA-Z_][a-zA-Z0-9_]* { printf("Identifier: %s\n", yytext); identifier_count++; }
 
-"+"                 { printf("MATH OPERATOR: PLUS (+)\n"); math_op_count++; }
-"-"                 { printf("MATH OPERATOR: MINUS (-)\n"); math_op_count++; }
-"*"                 { printf("MATH OPERATOR: MULTIPLY (*)\n"); math_op_count++; }
-"/"                 { printf("MATH OPERATOR: DIVIDE (/)\n"); math_op_count++; }
-"%"                 { printf("MATH OPERATOR: MODULO (%%)\n"); math_op_count++; }
-"^"                 { printf("MATH OPERATOR: POWER (^)\n"); math_op_count++; }
+// Numbers
+[0-9]+\.[0-9]+ { printf("Floating-Point Number: %s\n", yytext); number_count++; }
+[0-9]+ { printf("Integer: %s\n", yytext); number_count++; }
 
-
-[\{\}\(\)\[\];,]    { printf("SYMBOL: %s\n", yytext); symbol_count++; }
-"$"                 { printf("SYMBOL: Dollar ($)\n"); symbol_count++; }
-"@"                 { printf("SYMBOL: At (@)\n"); symbol_count++; }
-
-
-[a-zA-Z_][a-zA-Z0-9_]*    { printf("Identifier: %s\n", yytext); identifier_count++; }
-
-
-[0-9]+\.[0-9]+      { printf("Floating-Point Number: %s\n", yytext); number_count++; }
-[0-9]+              { printf("Integer: %s\n", yytext); number_count++; }
-
-.                   { printf("Unknown: %s\n", yytext); unknown_count++; }
-
+// Unknown characters
+. { 
+    printf("Unknown: %s\n", yytext);
+    unknown_count++;
+    yyerror("Unknown character");
+}
 
 %%
-
 
 int main(int argc, char *argv[]) {
-    FILE *input_file = fopen("input.txt", "r"); // Open the input file for reading
-    FILE *output_file = fopen("output.txt", "w"); // Open the output file for writing
-    
+    FILE *input_file = fopen("input.txt", "r");
+    FILE *output_file = fopen("output.txt", "w");
+
     if (!input_file) {
         fprintf(stderr, "Error opening input.txt\n");
         return 1;
@@ -125,11 +120,11 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    yyin = input_file; // Set the input stream to the file
-    yyout = output_file; // Set the output stream to the file
-    
+    yyin = input_file;
+    yyout = output_file;
+
     printf("Starting lexical analysis...\n");
-    yylex(); // Start the lexer
+    yylex();
 
     // Print token counts to the output file
     fprintf(output_file, "\nToken Counts:\n");
@@ -142,18 +137,15 @@ int main(int argc, char *argv[]) {
     fprintf(output_file, "New line: %d\n", newline_count);
     fprintf(output_file, "Comments: %d\n", comment_count);
     fprintf(output_file, "Unknowns: %d\n", unknown_count);
+    fprintf(output_file, "Errors: %d\n", error_count); // Print error count
 
-    fclose(input_file); // Close the input file
-    fclose(output_file); // Close the output file
+    fclose(input_file);
+    fclose(output_file);
 
     return 0;
 }
 
-// Required by Flex to indicate the end of input 
+// Required by Flex to indicate the end of input
 int yywrap() {
     return 1;
 }
-
-
-
-
