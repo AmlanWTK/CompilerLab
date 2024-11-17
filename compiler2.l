@@ -63,6 +63,17 @@ void yyerror(const char *s) {
 "yell" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
 "during" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
 "within" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
+"while" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
+"after" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
+"before" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
+"upon" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
+"through" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
+"around" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
+"against" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
+"among" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
+"beside" { printf("KEYWORD: %s\n", yytext); keyword_count++; }
+
+
 
 
 // Newline
