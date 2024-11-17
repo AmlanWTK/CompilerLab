@@ -7,5 +7,4 @@ Logical Operators: 0
 Math Operators: 2
 New line: 1
 Comments: 1
-
 Errors: 2
